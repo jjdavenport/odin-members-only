@@ -1,5 +1,5 @@
-import { type ReactNode } from "react";
-import { Link } from "react-router";
+import React, { useState, type ReactNode } from "react";
+import { Link, useNavigate } from "react-router";
 
 export const Title = () => {
   return (
@@ -31,9 +31,94 @@ export const Container = ({ children }: Prop) => {
   );
 };
 
+type LoginErrorsType = {
+  email?: string;
+  password?: string;
+};
+
 export const Login = () => {
-  const onSubmit = (e: React.ChangeEvent) => {
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+
+  const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const errors: LoginErrorsType = {};
+
+    if (input.email === "") {
+      errors.email = "cannot be blank";
+    }
+
+    if (input.password === "") {
+      errors.password = "cannot be blank";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/login/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: input.email,
+          password: input.password,
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError((prev) => ({ ...prev, password: "incorrect password" }));
+        }
+      } else {
+        setError({
+          email: "",
+          password: "",
+        });
+        navigate("/");
+      }
+    } catch {
+      setError({
+        email: "server error",
+        password: "server error",
+      });
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const errors: LoginErrorsType = {};
+
+    if (input.email === "") {
+      errors.email = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handlePasswordBlur = () => {
+    const errors: LoginErrorsType = {};
+
+    if (input.password === "") {
+      errors.password = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
   };
 
   return (
@@ -41,11 +126,23 @@ export const Login = () => {
       <Form onSubmit={onSubmit}>
         <div>
           <Input
+            onBlur={handleEmailBlur}
+            error={error.email}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, username: e.target.value }))
+            }
+            value={input.email}
             placeholder="Enter your username"
             type="text"
             label="Username"
           />
           <Input
+            onBlur={handlePasswordBlur}
+            error={error.password}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, password: e.target.value }))
+            }
+            value={input.password}
             placeholder="Enter your password"
             type="password"
             label="Password"
@@ -57,18 +154,207 @@ export const Login = () => {
   );
 };
 
+type RegisterErrorsType = {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
 export const Register = () => {
-  const onSubmit = (e: React.ChangeEvent) => {
+  const [input, setInput] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const onSubmit = async (e: React.ChangeEvent) => {
     e.preventDefault();
+
+    const errors: RegisterErrorsType = {};
+
+    if (input.email === "") {
+      errors.email = "cannot be blank";
+    }
+
+    if (input.password === "") {
+      errors.password = "cannot be blank";
+    }
+
+    if (input.confirmPassword === "") {
+      errors.confirmPassword = "cannot be blank";
+    }
+
+    if (input.firstName === "") {
+      errors.firstName = "cannot be blank";
+    }
+
+    if (input.lastName === "") {
+      errors.lastName = "cannot be blank";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmPassword: "",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/register/", {
+        body: JSON.stringify({
+          email: input.email,
+          firstName: input.firstName,
+          lastName: input.lastName,
+          password: input.password,
+          confirmPassword: input.confirmPassword,
+        }),
+      });
+    } catch {
+      setError({
+        email: "server error",
+        firstName: "server error",
+        lastName: "server error",
+        password: "server error",
+        confirmPassword: "server error",
+      });
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const errors: RegisterErrorsType = {};
+
+    if (input.email === "") {
+      errors.email = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handlePasswordBlur = () => {
+    const errors: RegisterErrorsType = {};
+
+    if (input.password === "") {
+      errors.password = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handleConfirmPasswordBlur = () => {
+    const errors: RegisterErrorsType = {};
+
+    if (input.confirmPassword === "") {
+      errors.confirmPassword = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handleFirstNameBlur = () => {
+    const errors: RegisterErrorsType = {};
+
+    if (input.firstName === "") {
+      errors.firstName = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handleLastNameBlur = () => {
+    const errors: RegisterErrorsType = {};
+
+    if (input.lastName === "") {
+      errors.lastName = "Cannot be empty";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
   };
 
   return (
     <>
       <Form onSubmit={onSubmit}>
         <div>
-          <Input label="username" type="text" placeholder="username" />
-          <Input label="password" type="password" placeholder="password" />
           <Input
+            onBlur={handleEmailBlur}
+            error={error.email}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, username: e.target.value }))
+            }
+            value={input.email}
+            label="email"
+            type="text"
+            placeholder="email"
+          />
+          <Input
+            onBlur={handleFirstNameBlur}
+            error={error.firstName}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, firstName: e.target.value }))
+            }
+            value={input.firstName}
+            label="first name"
+            type="text"
+            placeholder="first name"
+          />
+          <Input
+            onBlur={handleLastNameBlur}
+            error={error.lastName}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, lastName: e.target.value }))
+            }
+            value={input.lastName}
+            label="last name"
+            type="text"
+            placeholder="last name"
+          />
+          <Input
+            onBlur={handlePasswordBlur}
+            error={error.password}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, password: e.target.value }))
+            }
+            value={input.password}
+            label="password"
+            type="password"
+            placeholder="password"
+          />
+          <Input
+            onBlur={handleConfirmPasswordBlur}
+            error={error.confirmPassword}
+            onChange={(e) =>
+              setInput((prev) => ({ ...prev, confirmPassword: e.target.value }))
+            }
+            value={input.confirmPassword}
             label="confirm password"
             type="password"
             placeholder="confirm password"
@@ -103,14 +389,34 @@ type InputProps = {
   label: string;
   type: string;
   placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error: string;
+  onBlur: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Input = ({ label, type, placeholder }: InputProps) => {
+const Input = ({
+  label,
+  type,
+  placeholder,
+  value,
+  onChange,
+  error,
+  onBlur,
+}: InputProps) => {
   return (
     <>
       <div className="flex flex-col">
         <label htmlFor={label}>{label}</label>
-        <input className="p-1 outline" placeholder={placeholder} type={type} />
+        <input
+          onBlur={onBlur}
+          onChange={onChange}
+          value={value}
+          className={`${error === "" ? "outline-black" : "outline-red-600"} p-1 outline`}
+          placeholder={placeholder}
+          type={type}
+        />
+        {error !== "" && <span>{error}</span>}
       </div>
     </>
   );
@@ -129,10 +435,23 @@ const Button = ({ text }: ButtonProp) => {
 };
 
 export const PassCode = () => {
+  const [passcode, setPasscode] = useState("");
+  const [error, setError] = useState("");
+
+  const handleBlur = () => {};
+
   return (
     <>
       <form action="POST">
-        <Input placeholder="Pass code" label="Passcode" type="password" />
+        <Input
+          error={error}
+          onChange={(e) => setPasscode(e.target.value)}
+          value={passcode}
+          onBlur={handleBlur}
+          placeholder="Pass code"
+          label="Passcode"
+          type="password"
+        />
         <Button text="Join" />
       </form>
     </>
