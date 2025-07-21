@@ -1,4 +1,4 @@
-import { Login, Register, Title } from "../components";
+import { Login, Register, Title, Messages } from "../components";
 
 export const LoginPage = () => {
   return (
@@ -14,6 +14,23 @@ export const RegisterPage = () => {
     <>
       <Title />
       <Register />
+    </>
+  );
+};
+
+export const NewMessage = () => {
+  return (
+    <>
+      <Title />
+    </>
+  );
+};
+
+export const HomePage = () => {
+  return (
+    <>
+      <Title />
+      <Messages />
     </>
   );
 };

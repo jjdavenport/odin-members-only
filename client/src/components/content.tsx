@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
 
 export const Title = () => {
@@ -266,6 +266,8 @@ export const Register = () => {
 
     if (input.confirmPassword === "") {
       errors.confirmPassword = "Cannot be empty";
+    } else if (input.confirmPassword !== input.password) {
+      errors.confirmPassword = "passwords must match";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -305,6 +307,7 @@ export const Register = () => {
       <Form onSubmit={onSubmit}>
         <div>
           <Input
+            element="input"
             onBlur={handleEmailBlur}
             error={error.email}
             onChange={(e) =>
@@ -316,6 +319,7 @@ export const Register = () => {
             placeholder="email"
           />
           <Input
+            element="input"
             onBlur={handleFirstNameBlur}
             error={error.firstName}
             onChange={(e) =>
@@ -327,6 +331,7 @@ export const Register = () => {
             placeholder="first name"
           />
           <Input
+            element="input"
             onBlur={handleLastNameBlur}
             error={error.lastName}
             onChange={(e) =>
@@ -338,6 +343,7 @@ export const Register = () => {
             placeholder="last name"
           />
           <Input
+            element="input"
             onBlur={handlePasswordBlur}
             error={error.password}
             onChange={(e) =>
@@ -349,6 +355,7 @@ export const Register = () => {
             placeholder="password"
           />
           <Input
+            element="input"
             onBlur={handleConfirmPasswordBlur}
             error={error.confirmPassword}
             onChange={(e) =>
@@ -390,12 +397,18 @@ type InputProps = {
   type: string;
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   error: string;
-  onBlur: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
+  element: "input" | "textarea";
 };
 
 const Input = ({
+  element,
   label,
   type,
   placeholder,
@@ -408,14 +421,25 @@ const Input = ({
     <>
       <div className="flex flex-col">
         <label htmlFor={label}>{label}</label>
-        <input
-          onBlur={onBlur}
-          onChange={onChange}
-          value={value}
-          className={`${error === "" ? "outline-black" : "outline-red-600"} p-1 outline`}
-          placeholder={placeholder}
-          type={type}
-        />
+        {element === "input" ? (
+          <input
+            onBlur={onBlur}
+            onChange={onChange}
+            value={value}
+            className={`${error === "" ? "outline-black" : "outline-red-600"} p-1 outline`}
+            placeholder={placeholder}
+            type={type}
+          />
+        ) : (
+          <textarea
+            onBlur={onBlur}
+            onChange={onChange}
+            value={value}
+            className={`${error === "" ? "outline-black" : "outline-red-600"} p-1 outline`}
+            placeholder={placeholder}
+          />
+        )}
+
         {error !== "" && <span>{error}</span>}
       </div>
     </>
@@ -429,7 +453,9 @@ type ButtonProp = {
 const Button = ({ text }: ButtonProp) => {
   return (
     <>
-      <button className="cursor-pointer p-1 outline">{text}</button>
+      <button type="submit" className="cursor-pointer p-1 outline">
+        {text}
+      </button>
     </>
   );
 };
@@ -438,12 +464,21 @@ export const PassCode = () => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
 
-  const handleBlur = () => {};
+  const handleBlur = () => {
+    if (passcode === "") {
+      setError("cannot be blank");
+    }
+
+    if (error !== "") {
+      return;
+    }
+  };
 
   return (
     <>
       <form action="POST">
         <Input
+          element="input"
           error={error}
           onChange={(e) => setPasscode(e.target.value)}
           value={passcode}
@@ -455,5 +490,110 @@ export const PassCode = () => {
         <Button text="Join" />
       </form>
     </>
+  );
+};
+
+export const NewMessage = () => {
+  const [input, setInput] = useState({
+    title: "",
+    message: "",
+  });
+  const [error, setError] = useState({
+    title: "",
+    message: "",
+  });
+
+  const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
+  const handleTitleBlur = () => {};
+
+  const handleMessageBlur = () => {};
+
+  return (
+    <>
+      <Form onSubmit={onSubmit}>
+        <Input
+          type="text"
+          error={error.title}
+          onBlur={handleTitleBlur}
+          onChange={(e) =>
+            setInput((prev) => ({ ...prev, title: e.target.value }))
+          }
+          value={input.title}
+          element="input"
+          placeholder="title"
+          label="title"
+        />
+        <Input
+          type="text"
+          error={error.message}
+          onBlur={handleMessageBlur}
+          onChange={(e) =>
+            setInput((prev) => ({ ...prev, message: e.target.value }))
+          }
+          value={input.title}
+          element="textarea"
+          placeholder="message"
+          label="message"
+        />
+        <Button text="Post" />
+      </Form>
+    </>
+  );
+};
+
+type MessageProps = {
+  title: string;
+  timestamp: string;
+  message: string;
+};
+
+const Message = ({ title, timestamp, message }: MessageProps) => {
+  return (
+    <>
+      <div className="flex flex-col">
+        <div className="flex justify-between">
+          <span>{title}</span>
+          <span>{timestamp}</span>
+        </div>
+        <p>{message}</p>
+      </div>
+    </>
+  );
+};
+
+export const Messages = () => {
+  const [data, setData] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/get-messages/");
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (!data) return <div>Loading...</div>;
+
+  return (
+    <ul>
+      {data.map((i, index) => (
+        <li key={index}>
+          <Message
+            title={i.title}
+            message={i.message}
+            timestamp={i.timestamp}
+          />
+        </li>
+      ))}
+    </ul>
   );
 };
