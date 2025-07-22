@@ -26,7 +26,7 @@ export const Wrapper = ({ children }: Prop) => {
 export const Container = ({ children }: Prop) => {
   return (
     <>
-      <div className="max-w-sm justify-center p-4">{children}</div>
+      <div className="flex max-w-sm flex-col gap-1 p-4">{children}</div>
     </>
   );
 };
@@ -126,6 +126,7 @@ export const Login = () => {
       <Form onSubmit={onSubmit}>
         <div>
           <Input
+            element="input"
             onBlur={handleEmailBlur}
             error={error.email}
             onChange={(e) =>
@@ -137,6 +138,7 @@ export const Login = () => {
             label="Username"
           />
           <Input
+            element="input"
             onBlur={handlePasswordBlur}
             error={error.password}
             onChange={(e) =>
@@ -548,18 +550,19 @@ type MessageProps = {
   title: string;
   timestamp: string;
   message: string;
+  id: string;
 };
 
-const Message = ({ title, timestamp, message }: MessageProps) => {
+export const Message = ({ title, timestamp, message, id }: MessageProps) => {
   return (
     <>
-      <div className="flex flex-col">
-        <div className="flex justify-between">
+      <Link to={id} className="flex flex-col p-4 outline">
+        <div className="flex justify-between gap-4">
           <span>{title}</span>
           <span>{timestamp}</span>
         </div>
         <p>{message}</p>
-      </div>
+      </Link>
     </>
   );
 };
@@ -584,13 +587,14 @@ export const Messages = () => {
   if (!data) return <div>Loading...</div>;
 
   return (
-    <ul>
+    <ul className="flex flex-col gap-2">
       {data.map((i, index) => (
         <li key={index}>
           <Message
+            id={`/message/${i.id}`}
             title={i.title}
             message={i.message}
-            timestamp={i.timestamp}
+            timestamp={new Date(i.created_at).toLocaleString()}
           />
         </li>
       ))}
