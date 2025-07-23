@@ -1,13 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { getEmails } = require("../database/query");
+const authController = require("../controllers/auth-controller");
 
 router.post("/", async (req, res) => {});
 
-router.post("/check-email/", async (req, res) => {
-  const { email } = req.body;
-  const emailExists = await getEmails(email);
-  res.json({ available: !emailExists });
-});
+router.post("/check-email/", authController.getEmailsRegister);
 
 module.exports = router;
