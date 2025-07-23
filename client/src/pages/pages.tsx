@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
-import { Login, Register, Title, Messages, Message } from "../components";
+import {
+  Login,
+  Register,
+  Header,
+  Messages,
+  Message,
+  NewMessage,
+} from "../components";
 import { useParams } from "react-router";
 
 export const LoginPage = () => {
   return (
     <>
-      <Title />
+      <Header />
       <Login />
     </>
   );
@@ -14,16 +21,17 @@ export const LoginPage = () => {
 export const RegisterPage = () => {
   return (
     <>
-      <Title />
+      <Header />
       <Register />
     </>
   );
 };
 
-export const NewMessage = () => {
+export const NewMessagePage = () => {
   return (
     <>
-      <Title />
+      <Header />
+      <NewMessage />
     </>
   );
 };
@@ -31,7 +39,7 @@ export const NewMessage = () => {
 export const HomePage = () => {
   return (
     <>
-      <Title />
+      <Header />
       <Messages />
     </>
   );
@@ -60,7 +68,7 @@ export const MessagePage = () => {
 
   return (
     <>
-      <Title />
+      <Header />
       <Message
         to={`/message/${message.id}`}
         title={message.title}

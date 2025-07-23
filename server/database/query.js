@@ -12,4 +12,11 @@ const getMessageById = async (id) => {
   return rows[0];
 };
 
-module.exports = { getMessages, getMessageById };
+const getEmails = async (email) => {
+  const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
+  return rows[0];
+};
+
+module.exports = { getMessages, getMessageById, getEmails };

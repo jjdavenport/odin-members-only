@@ -1,12 +1,33 @@
 import React, { useEffect, useState, type ReactNode } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate, useOutletContext } from "react-router";
 
-export const Title = () => {
+type OutletType = {
+  loggedIn: boolean;
+};
+
+export const Header = () => {
+  const { loggedIn } = useOutletContext<OutletType>();
   return (
     <>
-      <Link className="text-xl font-medium" to="/">
-        membersOnly
-      </Link>
+      <header className="flex w-full items-end justify-between gap-4">
+        <Link className="text-xl font-medium" to="/">
+          membersOnly
+        </Link>
+        {loggedIn ? (
+          <nav>
+            <button>logout</button>
+          </nav>
+        ) : (
+          <nav className="flex gap-2">
+            <Link className="hover:underline" to="/login">
+              login
+            </Link>
+            <Link className="hover:underline" to="/register">
+              Sign up
+            </Link>
+          </nav>
+        )}
+      </header>
     </>
   );
 };
@@ -50,10 +71,19 @@ export const Login = () => {
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const response = await fetch("/api/login/check-email/", {
+      method: "POST",
+      body: JSON.stringify({ email: input.email }),
+    });
+
+    const { exists } = await response.json();
+
     const errors: LoginErrorsType = {};
 
     if (input.email === "") {
       errors.email = "cannot be blank";
+    } else if (!exists) {
+      errors.email = "email does not exist";
     }
 
     if (input.password === "") {
@@ -95,11 +125,23 @@ export const Login = () => {
     }
   };
 
-  const handleEmailBlur = () => {
+  const handleEmailBlur = async () => {
+    const response = await fetch("/api/login/check-email/", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: input.email }),
+    });
+
+    const { exists } = await response.json();
+
     const errors: LoginErrorsType = {};
 
     if (input.email === "") {
       errors.email = "Cannot be empty";
+    } else if (!exists) {
+      errors.email = "email does not exist";
+    } else {
+      errors.email = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -113,6 +155,8 @@ export const Login = () => {
 
     if (input.password === "") {
       errors.password = "Cannot be empty";
+    } else {
+      errors.password = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -130,12 +174,12 @@ export const Login = () => {
             onBlur={handleEmailBlur}
             error={error.email}
             onChange={(e) =>
-              setInput((prev) => ({ ...prev, username: e.target.value }))
+              setInput((prev) => ({ ...prev, email: e.target.value }))
             }
             value={input.email}
-            placeholder="Enter your username"
-            type="text"
-            label="Username"
+            placeholder="Enter your email"
+            type="email"
+            label="email"
           />
           <Input
             element="input"
@@ -179,14 +223,27 @@ export const Register = () => {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.ChangeEvent) => {
     e.preventDefault();
+
+    const response = await fetch("/api/register/check-email/", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: input.email }),
+    });
+
+    const { available } = await response.json();
 
     const errors: RegisterErrorsType = {};
 
     if (input.email === "") {
       errors.email = "cannot be blank";
+    } else if (!input.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      errors.email = "not a valid email";
+    } else if (!available) {
+      errors.email = "email is already registered";
     }
 
     if (input.password === "") {
@@ -226,6 +283,7 @@ export const Register = () => {
           confirmPassword: input.confirmPassword,
         }),
       });
+      navigate("/login/");
     } catch {
       setError({
         email: "server error",
@@ -237,11 +295,25 @@ export const Register = () => {
     }
   };
 
-  const handleEmailBlur = () => {
+  const handleEmailBlur = async () => {
+    const response = await fetch("/api/register/check-email/", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: input.email }),
+    });
+
+    const { available } = await response.json();
+
     const errors: RegisterErrorsType = {};
 
     if (input.email === "") {
       errors.email = "Cannot be empty";
+    } else if (!input.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      errors.email = "must be a valid email";
+    } else if (!available) {
+      errors.email = "email is already registered";
+    } else {
+      errors.email = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -255,6 +327,10 @@ export const Register = () => {
 
     if (input.password === "") {
       errors.password = "Cannot be empty";
+    } else if (input.password.length < 8) {
+      errors.password = "password must be 8 characters or more";
+    } else {
+      errors.password = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -268,8 +344,12 @@ export const Register = () => {
 
     if (input.confirmPassword === "") {
       errors.confirmPassword = "Cannot be empty";
+    } else if (input.confirmPassword.length < 8) {
+      errors.confirmPassword = "password must be 8 characters or more";
     } else if (input.confirmPassword !== input.password) {
       errors.confirmPassword = "passwords must match";
+    } else {
+      errors.confirmPassword = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -283,6 +363,8 @@ export const Register = () => {
 
     if (input.firstName === "") {
       errors.firstName = "Cannot be empty";
+    } else {
+      errors.firstName = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -296,6 +378,8 @@ export const Register = () => {
 
     if (input.lastName === "") {
       errors.lastName = "Cannot be empty";
+    } else {
+      errors.lastName = "";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -313,11 +397,11 @@ export const Register = () => {
             onBlur={handleEmailBlur}
             error={error.email}
             onChange={(e) =>
-              setInput((prev) => ({ ...prev, username: e.target.value }))
+              setInput((prev) => ({ ...prev, email: e.target.value }))
             }
             value={input.email}
             label="email"
-            type="text"
+            type="email"
             placeholder="email"
           />
           <Input
@@ -384,6 +468,7 @@ const Form = ({ children, onSubmit }: FormProps) => {
   return (
     <>
       <form
+        noValidate
         onSubmit={onSubmit}
         className="flex flex-col gap-3 p-4 outline"
         action="POST"
