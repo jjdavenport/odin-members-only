@@ -4,9 +4,9 @@ const LocalStrategy = require("passport-local").Strategy;
 const { getUserByEmail, getUserById } = require("./database/query");
 
 passport.use(
-  new LocalStrategy(async (email, password, done) => {
+  new LocalStrategy(async (username, password, done) => {
     try {
-      const user = await getUserByEmail(email);
+      const user = await getUserByEmail(username);
 
       if (!user) {
         return done(null, false, { message: "Incorrect email" });

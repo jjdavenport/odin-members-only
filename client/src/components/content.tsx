@@ -1,5 +1,5 @@
 import React, { useEffect, useState, type ReactNode } from "react";
-import { Link, Navigate, useNavigate, useOutletContext } from "react-router";
+import { Link, useNavigate, useOutletContext } from "react-router";
 
 type OutletType = {
   loggedIn: boolean;
@@ -102,7 +102,7 @@ export const Login = () => {
         headers: { "content-type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          email: input.email,
+          username: input.email,
           password: input.password,
         }),
       });
