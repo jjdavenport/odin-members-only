@@ -73,6 +73,7 @@ export const Login = () => {
 
     const response = await fetch("/api/login/check-email/", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: input.email }),
     });
 
@@ -231,7 +232,9 @@ export const Register = () => {
     const response = await fetch("/api/register/check-email/", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email: input.email }),
+      body: JSON.stringify({
+        email: input.email,
+      }),
     });
 
     const { available } = await response.json();
@@ -263,18 +266,14 @@ export const Register = () => {
     }
 
     if (Object.keys(errors).length > 0) {
-      setError({
-        email: "",
-        firstName: "",
-        lastName: "",
-        password: "",
-        confirmPassword: "",
-      });
+      setError(errors);
       return;
     }
 
     try {
-      const response = await fetch("/api/register/", {
+      await fetch("/api/register/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({
           email: input.email,
           firstName: input.firstName,
@@ -282,6 +281,13 @@ export const Register = () => {
           password: input.password,
           confirmPassword: input.confirmPassword,
         }),
+      });
+      setInput({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmPassword: "",
       });
       navigate("/login/");
     } catch {

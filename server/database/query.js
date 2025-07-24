@@ -31,10 +31,18 @@ const getUserById = async (id) => {
   return rows[0];
 };
 
+const registerUser = async (email, firstName, lastName, password) => {
+  await pool.query(
+    "INSERT INTO users (email, first_name, last_name, password)",
+    [email, firstName, lastName, password]
+  );
+};
+
 module.exports = {
   getMessages,
   getMessageById,
   getEmails,
   getUserByEmail,
   getUserById,
+  registerUser,
 };

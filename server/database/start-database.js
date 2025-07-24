@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { Client } = require("pg");
+const bcrypt = require("bcrypt");
 
 const HOSTNAME = process.env.HOSTNAME;
 const USER = process.env.USER;
@@ -25,7 +26,12 @@ const messages = [
   },
 ];
 
-const SQL = `
+async function startDatabase() {
+  console.log("starting database...");
+
+  const USER_PASSWORD = await bcrypt.hash(process.env.USER_PASSWORD, 10);
+
+  const SQL = `
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   email VARCHAR(255),
@@ -44,9 +50,9 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 INSERT INTO users (email, password, first_name, last_name, admin)
-VALUES ('${process.env.EMAIL}', '${process.env.USER_PASSWORD}', '${
-  process.env.FIRST_NAME
-}', '${process.env.LAST_NAME}', '${process.env.ADMIN}');
+VALUES ('${process.env.EMAIL}', '${USER_PASSWORD}', '${
+    process.env.FIRST_NAME
+  }', '${process.env.LAST_NAME}', '${process.env.ADMIN}');
 
 ${messages
   .map(
@@ -56,8 +62,6 @@ ${messages
   .join("\n")}
 `;
 
-async function startDatabase() {
-  console.log("starting database...");
   const client = new Client({
     connectionString: `postgres://${USER}:${PASSWORD}@${HOSTNAME}:${PORT}/${DATABASE}`,
   });
