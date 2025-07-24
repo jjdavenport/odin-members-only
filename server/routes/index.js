@@ -1,24 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { getMessages, getMessageById } = require("../database/query");
+const messageController = require("../controllers/message-controller");
+const authController = require("../controllers/auth-controller");
 
-router.get("/get-messages/", async (req, res) => {
-  try {
-    const messages = await getMessages();
-    res.json(messages);
-  } catch {
-    console.log("error");
-  }
-});
+router.get("/get-messages/", messageController.getMessages);
 
-router.get("/message/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const message = await getMessageById(id);
-    res.json(message);
-  } catch {
-    console.log("error");
-  }
-});
+router.get("/message/:id", messageController.getMessageById);
+
+router.post("/logout/", authController.logout);
 
 module.exports = router;

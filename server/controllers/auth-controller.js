@@ -51,3 +51,21 @@ exports.login = async (req, res, next) => {
     });
   })(req, res, next);
 };
+
+exports.logout = async (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+  });
+  res.json({ success: true, message: "logged out" });
+};
+
+exports.status = async (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({
+      loggedIn: true,
+      email: req.user,
+    });
+  } else {
+    res.status(200).json({ loggedIn: false });
+  }
+};

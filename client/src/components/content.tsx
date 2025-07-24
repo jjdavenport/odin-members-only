@@ -3,10 +3,27 @@ import { Link, useNavigate, useOutletContext } from "react-router";
 
 type OutletType = {
   loggedIn: boolean;
+  setLoggedIn: () => void;
 };
 
 export const Header = () => {
-  const { loggedIn } = useOutletContext<OutletType>();
+  const { loggedIn, setLoggedIn } = useOutletContext<OutletType>();
+
+  const logout = async () => {
+    try {
+      const response = await fetch("/api/logout/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+      });
+      if (response.ok) {
+        setLoggedIn(false);
+      }
+    } catch {
+      console.log("failed to logout");
+    }
+  };
+
   return (
     <>
       <header className="flex w-full items-end justify-between gap-4">
@@ -15,7 +32,9 @@ export const Header = () => {
         </Link>
         {loggedIn ? (
           <nav>
-            <button>logout</button>
+            <button className="cursor-pointer hover:underline" onClick={logout}>
+              logout
+            </button>
           </nav>
         ) : (
           <nav className="flex gap-2">
@@ -67,6 +86,7 @@ export const Login = () => {
     password: "",
   });
   const navigate = useNavigate();
+  const { setLoggedIn } = useOutletContext<OutletType>();
 
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,6 +136,7 @@ export const Login = () => {
           email: "",
           password: "",
         });
+        setLoggedIn(true); // update with /status/
         navigate("/");
       }
     } catch {

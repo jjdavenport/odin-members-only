@@ -8,6 +8,7 @@ const indexRouter = require("./routes/index");
 const loginRouter = require("./routes/login-router");
 const registerRouter = require("./routes/register-router");
 const authRouter = require("./routes/auth-router");
+const authenticate = require("./middleware/authenticate");
 require("./passport-config");
 
 const PORT = process.env.PORT;
@@ -28,7 +29,10 @@ app.get("@", (req, res) => {
 app.use("/api/", indexRouter);
 app.use("/api/login/", loginRouter);
 app.use("/api/register/", registerRouter);
-app.use("/api/authenticated/", authRouter);
+
+app.use(authenticate);
+
+app.use("/api/auth/", authRouter);
 
 app.listen(PORT, () => {
   console.log(`listening on http://${HOSTNAME}:${PORT}`);
