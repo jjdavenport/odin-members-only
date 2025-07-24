@@ -33,7 +33,7 @@ const getUserById = async (id) => {
 
 const registerUser = async (email, firstName, lastName, password) => {
   await pool.query(
-    "INSERT INTO users (email, first_name, last_name, password)",
+    "INSERT INTO users (email, first_name, last_name, password, admin) VALUES ($1, $2, $3, $4, false)",
     [email, firstName, lastName, password]
   );
 };

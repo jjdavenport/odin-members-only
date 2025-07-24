@@ -14,7 +14,7 @@ router.post("/", async (req, res, next) => {
           "email, fist name, last name, password, confirm password required",
       });
     }
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     await registerUser(email, firstName, lastName, hashedPassword);
     res.status(200).json({ success: true });
   } catch (error) {
