@@ -4,6 +4,7 @@ import { Outlet } from "react-router";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [admin, setAdmin] = useState<boolean>(false);
 
   const authenticate = async () => {
     try {
@@ -25,7 +26,7 @@ function App() {
     <>
       <Wrapper>
         <Container>
-          <Outlet context={{ loggedIn, setLoggedIn }} />
+          <Outlet context={{ loggedIn, setLoggedIn, setAdmin }} />
         </Container>
       </Wrapper>
     </>

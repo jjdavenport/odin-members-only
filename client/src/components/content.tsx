@@ -31,7 +31,10 @@ export const Header = () => {
           membersOnly
         </Link>
         {loggedIn ? (
-          <nav>
+          <nav className="flex gap-2">
+            <Link className="hover:underline" to="/admin/">
+              Join Admin
+            </Link>
             <button className="cursor-pointer hover:underline" onClick={logout}>
               logout
             </button>
@@ -577,20 +580,50 @@ const Button = ({ text }: ButtonProp) => {
 export const PassCode = () => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
+  const { setAdmin } = useOutletContext();
+  const navigate = useNavigate();
+
+  const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (passcode === "") {
+      setError("cannot be blank");
+    } else setError("");
+
+    try {
+      const response = await fetch("/api/auth/admin/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ passcode: passcode }),
+      });
+
+      if (response.ok) {
+        setPasscode("");
+        setError("");
+        setAdmin(true);
+        navigate("/");
+      } else if (response.status === 401) {
+        setError("incorrect password");
+      } else {
+        setError("server error");
+      }
+    } catch {
+      setError("server error");
+    }
+  };
 
   const handleBlur = () => {
     if (passcode === "") {
       setError("cannot be blank");
-    }
-
-    if (error !== "") {
-      return;
+    } else {
+      setError("");
     }
   };
 
   return (
     <>
-      <form action="POST">
+      <Form onSubmit={onSubmit}>
         <Input
           element="input"
           error={error}
@@ -602,7 +635,7 @@ export const PassCode = () => {
           type="password"
         />
         <Button text="Join" />
-      </form>
+      </Form>
     </>
   );
 };

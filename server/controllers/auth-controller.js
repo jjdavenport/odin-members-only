@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { getEmails, registerUser } = require("../database/query");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -67,5 +68,19 @@ exports.status = async (req, res) => {
     });
   } else {
     res.status(200).json({ loggedIn: false });
+  }
+};
+
+exports.admin = async (req, res) => {
+  try {
+    const { passcode } = req.body;
+    if (passcode === process.env.PASSCODE) {
+      return res
+        .status(200)
+        .json({ success: true, message: "correct passcode" });
+    }
+    return res.status(401).json({ success: false, message: "wrong passcode" });
+  } catch {
+    return res.status(500).json({ message: "server error" });
   }
 };

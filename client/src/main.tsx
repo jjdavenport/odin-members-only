@@ -6,6 +6,7 @@ import {
   LoginPage,
   RegisterPage,
   MessagePage,
+  AdminPage,
 } from "./pages/pages.tsx";
 import "./index.css";
 import App from "./App.tsx";
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "message/:id",
         element: <MessagePage />,
+      },
+      {
+        path: "admin",
+        element: <AdminPage />,
       },
     ],
   },

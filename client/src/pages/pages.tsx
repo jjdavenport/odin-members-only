@@ -6,8 +6,18 @@ import {
   Messages,
   Message,
   NewMessage,
+  PassCode,
 } from "../components";
 import { useParams } from "react-router";
+
+export const AdminPage = () => {
+  return (
+    <>
+      <Header />
+      <PassCode />
+    </>
+  );
+};
 
 export const LoginPage = () => {
   return (
