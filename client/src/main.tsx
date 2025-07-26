@@ -7,6 +7,7 @@ import {
   RegisterPage,
   MessagePage,
   AdminPage,
+  NewMessagePage,
 } from "./pages/pages.tsx";
 import "./index.css";
 import App from "./App.tsx";
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "admin",
         element: <AdminPage />,
+      },
+      {
+        path: "new-message",
+        element: <NewMessagePage />,
       },
     ],
   },

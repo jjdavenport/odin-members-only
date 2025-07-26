@@ -8,6 +8,7 @@ const indexRouter = require("./routes/index");
 const loginRouter = require("./routes/login-router");
 const registerRouter = require("./routes/register-router");
 const authRouter = require("./routes/auth-router");
+const adminRouter = require("./routes/admin-router");
 const authenticate = require("./middleware/authenticate");
 require("./passport-config");
 
@@ -33,6 +34,7 @@ app.use("/api/register/", registerRouter);
 app.use(authenticate);
 
 app.use("/api/auth/", authRouter);
+app.use("/api/admin/", adminRouter);
 
 app.listen(PORT, () => {
   console.log(`listening on http://${HOSTNAME}:${PORT}`);

@@ -1,13 +1,15 @@
+import { Trash2 } from "lucide-react";
 import React, { useEffect, useState, type ReactNode } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router";
+import { Link, useNavigate, useOutletContext, useParams } from "react-router";
 
 type OutletType = {
   loggedIn: boolean;
-  setLoggedIn: () => void;
+  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  admin: boolean;
 };
 
 export const Header = () => {
-  const { loggedIn, setLoggedIn } = useOutletContext<OutletType>();
+  const { loggedIn, setLoggedIn, admin } = useOutletContext<OutletType>();
 
   const logout = async () => {
     try {
@@ -32,9 +34,11 @@ export const Header = () => {
         </Link>
         {loggedIn ? (
           <nav className="flex gap-2">
-            <Link className="hover:underline" to="/admin/">
-              Join Admin
-            </Link>
+            {admin || (
+              <Link className="hover:underline" to="/admin/">
+                Join Admin
+              </Link>
+            )}
             <button className="cursor-pointer hover:underline" onClick={logout}>
               logout
             </button>
@@ -241,7 +245,7 @@ export const Register = () => {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState({
+  const [error, setError] = useState<RegisterErrorsType>({
     email: "",
     firstName: "",
     lastName: "",
@@ -517,7 +521,7 @@ type InputProps = {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
-  error: string;
+  error: string | undefined;
   onBlur: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -567,7 +571,7 @@ type ButtonProp = {
   text: string;
 };
 
-const Button = ({ text }: ButtonProp) => {
+export const Button = ({ text }: ButtonProp) => {
   return (
     <>
       <button type="submit" className="cursor-pointer p-1 outline">
@@ -577,10 +581,14 @@ const Button = ({ text }: ButtonProp) => {
   );
 };
 
+type PasscodeOutletType = {
+  setAdmin: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 export const PassCode = () => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
-  const { setAdmin } = useOutletContext();
+  const { setAdmin } = useOutletContext<PasscodeOutletType>();
   const navigate = useNavigate();
 
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
@@ -640,6 +648,11 @@ export const PassCode = () => {
   );
 };
 
+type NewMessageErrorsType = {
+  title?: string;
+  message?: string;
+};
+
 export const NewMessage = () => {
   const [input, setInput] = useState({
     title: "",
@@ -652,11 +665,58 @@ export const NewMessage = () => {
 
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const errors: NewMessageErrorsType = {};
+
+    if (input.title === "") {
+      errors.title = "cannot be blank";
+    }
+
+    if (input.message === "") {
+      errors.message = "cannot be blank";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+
+    try {
+      await fetch("/api/auth/new-message/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title: input.title, message: input.message }),
+      });
+    } catch {
+      console.log("failed to post");
+    }
   };
 
-  const handleTitleBlur = () => {};
+  const handleTitleBlur = () => {
+    const errors: NewMessageErrorsType = {};
 
-  const handleMessageBlur = () => {};
+    if (input.title === "") {
+      errors.title = "cannot be blank";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
+
+  const handleMessageBlur = () => {
+    const errors: NewMessageErrorsType = {};
+
+    if (input.message === "") {
+      errors.message = "cannot be blank";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setError((prev) => ({ ...prev, ...errors }));
+      return;
+    }
+  };
 
   return (
     <>
@@ -680,7 +740,7 @@ export const NewMessage = () => {
           onChange={(e) =>
             setInput((prev) => ({ ...prev, message: e.target.value }))
           }
-          value={input.title}
+          value={input.message}
           element="textarea"
           placeholder="message"
           label="message"
@@ -695,19 +755,63 @@ type MessageProps = {
   title: string;
   timestamp: string;
   message: string;
-  id: string;
+  pageId?: string;
+  element: "link" | "div";
 };
 
-export const Message = ({ title, timestamp, message, id }: MessageProps) => {
+type OutletProp = {
+  admin: boolean;
+};
+
+export const Message = ({
+  title,
+  timestamp,
+  message,
+  pageId,
+  element,
+}: MessageProps) => {
+  const { admin } = useOutletContext<OutletProp>();
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const onClick = async () => {
+    try {
+      const response = await fetch(`/api/admin/delete-message/${id}`, {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+      });
+      if (response.ok) {
+        navigate("/");
+      }
+    } catch {
+      console.log("failed to delete");
+    }
+  };
+
   return (
     <>
-      <Link to={id} className="flex flex-col p-4 outline">
-        <div className="flex justify-between gap-4">
-          <span>{title}</span>
-          <span>{timestamp}</span>
+      {element === "link" ? (
+        <Link to={pageId} className="flex flex-col items-end p-4 outline">
+          <div className="flex w-full justify-between gap-4">
+            <span>{title}</span>
+            <span>{timestamp}</span>
+          </div>
+          <p className="w-full">{message}</p>
+        </Link>
+      ) : (
+        <div className="flex flex-col items-end p-4 outline">
+          <div className="flex w-full justify-between gap-4">
+            <span>{title}</span>
+            <span>{timestamp}</span>
+          </div>
+          <p className="w-full">{message}</p>
+          {admin && (
+            <button className="cursor-pointer" onClick={onClick}>
+              <Trash2 className="hover:text-red-600" />
+            </button>
+          )}
         </div>
-        <p>{message}</p>
-      </Link>
+      )}
     </>
   );
 };
@@ -736,7 +840,8 @@ export const Messages = () => {
       {data.map((i, index) => (
         <li key={index}>
           <Message
-            id={`/message/${i.id}`}
+            element="link"
+            pageId={`/message/${i.id}`}
             title={i.title}
             message={i.message}
             timestamp={new Date(i.created_at).toLocaleString()}

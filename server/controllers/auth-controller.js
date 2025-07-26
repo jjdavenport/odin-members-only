@@ -1,5 +1,9 @@
 require("dotenv").config();
-const { getEmails, registerUser } = require("../database/query");
+const {
+  getEmails,
+  registerUser,
+  deleteMessageById,
+} = require("../database/query");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 
@@ -65,6 +69,7 @@ exports.status = async (req, res) => {
     res.status(200).json({
       loggedIn: true,
       email: req.user,
+      admin: req.admin,
     });
   } else {
     res.status(200).json({ loggedIn: false });
@@ -82,5 +87,22 @@ exports.admin = async (req, res) => {
     return res.status(401).json({ success: false, message: "wrong passcode" });
   } catch {
     return res.status(500).json({ message: "server error" });
+  }
+};
+
+exports.newMessage = async (req, res) => {
+  const { title, message } = req.body;
+  await newMessage(title, message);
+};
+
+exports.deleteMessage = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteMessageById(id);
+    return res.status(200).json({ success: true, message: "deleted message" });
+  } catch {
+    return res
+      .status(500)
+      .json({ success: false, message: "failed to delete" });
   }
 };

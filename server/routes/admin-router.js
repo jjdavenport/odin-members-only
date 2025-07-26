@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth-controller");
 
-router.get("/status/", authController.status);
-router.post("/admin/", authController.admin);
-router.post("/new-message/", authController.newMessage);
+router.delete("/delete-message/:id", authController.deleteMessage);
 
 module.exports = router;

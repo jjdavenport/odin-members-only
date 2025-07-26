@@ -8,7 +8,7 @@ import {
   NewMessage,
   PassCode,
 } from "../components";
-import { useParams } from "react-router";
+import { Link, useOutletContext, useParams } from "react-router";
 
 export const AdminPage = () => {
   return (
@@ -46,10 +46,21 @@ export const NewMessagePage = () => {
   );
 };
 
+type OutletType = {
+  loggedIn: boolean;
+};
+
 export const HomePage = () => {
+  const { loggedIn } = useOutletContext<OutletType>();
   return (
     <>
       <Header />
+      <Link
+        className="p-1 text-center outline"
+        to={loggedIn ? "/new-message/" : "/login/"}
+      >
+        New Message
+      </Link>
       <Messages />
     </>
   );
@@ -64,7 +75,6 @@ export const MessagePage = () => {
       const response = await fetch(`/api/message/${id}`);
       const result = await response.json();
       setMessage(result);
-      console.log(result);
     } catch {
       console.log("error");
     }
@@ -80,11 +90,15 @@ export const MessagePage = () => {
     <>
       <Header />
       <Message
+        element="div"
         to={`/message/${message.id}`}
         title={message.title}
         message={message.message}
         timestamp={new Date(message.created_at).toLocaleString()}
       />
+      <Link className="p-1 text-center outline" to="/">
+        Back
+      </Link>
     </>
   );
 };

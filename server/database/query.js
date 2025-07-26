@@ -38,6 +38,21 @@ const registerUser = async (email, firstName, lastName, password) => {
   );
 };
 
+const addAdminById = async (id) => {
+  await pool.query("UPDATE users SET admin = TRUE WHERE id = $1", [id]);
+};
+
+const newMessage = async (id, title, message) => {
+  await pool.query(
+    "UPDATE messages SET title = $2, message = $2 WHERE user_id = $1",
+    [id, title, message]
+  );
+};
+
+const deleteMessageById = async (id) => {
+  await pool.query("DELETE FROM messages WHERE id = $1", [id]);
+};
+
 module.exports = {
   getMessages,
   getMessageById,
@@ -45,4 +60,7 @@ module.exports = {
   getUserByEmail,
   getUserById,
   registerUser,
+  addAdminById,
+  newMessage,
+  deleteMessageById,
 };
