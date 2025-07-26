@@ -10,6 +10,7 @@ type OutletType = {
 
 export const Header = () => {
   const { loggedIn, setLoggedIn, admin } = useOutletContext<OutletType>();
+  const navigate = useNavigate();
 
   const logout = async () => {
     try {
@@ -20,6 +21,7 @@ export const Header = () => {
       });
       if (response.ok) {
         setLoggedIn(false);
+        navigate("/");
       }
     } catch {
       console.log("failed to logout");
@@ -662,6 +664,7 @@ export const NewMessage = () => {
     title: "",
     message: "",
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -682,11 +685,14 @@ export const NewMessage = () => {
     }
 
     try {
-      await fetch("/api/auth/new-message/", {
+      const response = await fetch("/api/auth/new-message/", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ title: input.title, message: input.message }),
       });
+      if (response.ok) {
+        navigate("/");
+      }
     } catch {
       console.log("failed to post");
     }

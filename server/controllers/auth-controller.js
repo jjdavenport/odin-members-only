@@ -3,6 +3,7 @@ const {
   getEmails,
   registerUser,
   deleteMessageById,
+  newMessage,
 } = require("../database/query");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -91,8 +92,14 @@ exports.admin = async (req, res) => {
 };
 
 exports.newMessage = async (req, res) => {
-  const { title, message } = req.body;
-  await newMessage(title, message);
+  try {
+    const id = req.user.id;
+    const { title, message } = req.body;
+    await newMessage(id, title, message);
+    res.status(201).json({ success: true, message: "added message" });
+  } catch {
+    res.status(500).json({ success: false, message: "failed to add message" });
+  }
 };
 
 exports.deleteMessage = async (req, res) => {

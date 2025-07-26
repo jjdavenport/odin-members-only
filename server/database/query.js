@@ -44,7 +44,7 @@ const addAdminById = async (id) => {
 
 const newMessage = async (id, title, message) => {
   await pool.query(
-    "UPDATE messages SET title = $2, message = $2 WHERE user_id = $1",
+    "INSERT INTO messages (user_id, title, message) VALUES ($1, $2, $3)",
     [id, title, message]
   );
 };
