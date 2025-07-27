@@ -765,10 +765,12 @@ type MessageProps = {
   message: string;
   pageId?: string;
   element: "link" | "div";
+  author: string;
 };
 
 type OutletProp = {
   admin: boolean;
+  loggedIn: boolean;
 };
 
 export const Message = ({
@@ -777,8 +779,9 @@ export const Message = ({
   message,
   pageId,
   element,
+  author,
 }: MessageProps) => {
-  const { admin } = useOutletContext<OutletProp>();
+  const { admin, loggedIn } = useOutletContext<OutletProp>();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -799,19 +802,25 @@ export const Message = ({
   return (
     <>
       {element === "link" ? (
-        <Link to={pageId} className="flex flex-col items-end p-4 outline">
-          <div className="flex w-full justify-between gap-4">
-            <span>{title}</span>
-            <span>{timestamp}</span>
-          </div>
+        <Link to={pageId} className="flex flex-col p-4 outline">
+          {loggedIn && (
+            <div className="flex w-full justify-between gap-4">
+              <span>{author.charAt(0).toUpperCase() + author.slice(1)}</span>
+              <span>{timestamp}</span>
+            </div>
+          )}
+          <span>{title}</span>
           <p className="w-full">{message}</p>
         </Link>
       ) : (
         <div className="flex flex-col items-end p-4 outline">
-          <div className="flex w-full justify-between gap-4">
-            <span>{title}</span>
-            <span>{timestamp}</span>
-          </div>
+          {loggedIn && (
+            <div className="flex w-full justify-between gap-4">
+              <span>{author.charAt(0).toUpperCase() + author.slice(1)}</span>
+              <span>{timestamp}</span>
+            </div>
+          )}
+          <span>{title}</span>
           <p className="w-full">{message}</p>
           {admin && (
             <button className="cursor-pointer" onClick={onClick}>
@@ -848,6 +857,7 @@ export const Messages = () => {
       {data.map((i, index) => (
         <li key={index}>
           <Message
+            author={i.first_name}
             element="link"
             pageId={`/message/${i.id}`}
             title={i.title}

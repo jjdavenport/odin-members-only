@@ -15,6 +15,9 @@ export const AdminPage = () => {
     <>
       <Header />
       <PassCode />
+      <Link className="p-1 text-center outline" to="/">
+        Back
+      </Link>
     </>
   );
 };
@@ -24,6 +27,9 @@ export const LoginPage = () => {
     <>
       <Header />
       <Login />
+      <Link className="p-1 text-center outline" to="/">
+        Back
+      </Link>
     </>
   );
 };
@@ -33,6 +39,9 @@ export const RegisterPage = () => {
     <>
       <Header />
       <Register />
+      <Link className="p-1 text-center outline" to="/">
+        Back
+      </Link>
     </>
   );
 };
@@ -42,6 +51,9 @@ export const NewMessagePage = () => {
     <>
       <Header />
       <NewMessage />
+      <Link className="p-1 text-center outline" to="/">
+        Back
+      </Link>
     </>
   );
 };
@@ -90,6 +102,7 @@ export const MessagePage = () => {
     <>
       <Header />
       <Message
+        author={message.first_name}
         element="div"
         to={`/message/${message.id}`}
         title={message.title}

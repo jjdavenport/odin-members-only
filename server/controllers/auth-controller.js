@@ -4,7 +4,7 @@ const {
   registerUser,
   deleteMessageById,
   newMessage,
-  getAdminById,
+  addAdminById,
 } = require("../database/query");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -82,6 +82,7 @@ exports.admin = async (req, res) => {
   try {
     const { passcode } = req.body;
     if (passcode === process.env.PASSCODE) {
+      await addAdminById(req.user.id);
       return res
         .status(200)
         .json({ success: true, message: "correct passcode" });
