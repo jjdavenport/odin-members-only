@@ -11,18 +11,13 @@ const PORT = process.env.DB_PORT;
 const messages = [
   {
     userId: 1,
-    title: "test",
-    message: "test",
+    title: "Welcome to members only",
+    message: "add you message below if signed up and logged in.",
   },
   {
     userId: 1,
-    title: "test 2",
-    message: "test",
-  },
-  {
-    userId: 1,
-    title: "test 3",
-    message: "test",
+    title: "Admin",
+    message: "passcode is password123",
   },
 ];
 

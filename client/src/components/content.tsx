@@ -76,7 +76,7 @@ export const Wrapper = ({ children }: Prop) => {
 export const Container = ({ children }: Prop) => {
   return (
     <>
-      <div className="flex max-w-sm flex-col gap-1 p-4">{children}</div>
+      <div className="flex w-full max-w-sm flex-col gap-2 p-4">{children}</div>
     </>
   );
 };
@@ -565,7 +565,7 @@ const Input = ({
           />
         )}
 
-        {error !== "" && <span>{error}</span>}
+        {error !== "" && <span className="text-red-600">{error}</span>}
       </div>
     </>
   );
@@ -809,23 +809,29 @@ export const Message = ({
               <span>{timestamp}</span>
             </div>
           )}
-          <span>{title}</span>
-          <p className="w-full">{message}</p>
+          <div className="flex flex-col">
+            <span className="text-lg font-medium">{title}</span>
+            <p className="w-full">{message}</p>
+          </div>
         </Link>
       ) : (
-        <div className="flex flex-col items-end p-4 outline">
+        <div className="flex flex-col p-4 outline">
           {loggedIn && (
             <div className="flex w-full justify-between gap-4">
               <span>{author.charAt(0).toUpperCase() + author.slice(1)}</span>
               <span>{timestamp}</span>
             </div>
           )}
-          <span>{title}</span>
-          <p className="w-full">{message}</p>
+          <div className="flex flex-col">
+            <span className="text-lg font-medium">{title}</span>
+            <p className="w-full">{message}</p>
+          </div>
           {admin && (
-            <button className="cursor-pointer" onClick={onClick}>
-              <Trash2 className="hover:text-red-600" />
-            </button>
+            <div className="flex w-full justify-end">
+              <button className="cursor-pointer" onClick={onClick}>
+                <Trash2 className="hover:text-red-600" />
+              </button>
+            </div>
           )}
         </div>
       )}
