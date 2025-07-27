@@ -53,6 +53,13 @@ const deleteMessageById = async (id) => {
   await pool.query("DELETE FROM messages WHERE id = $1", [id]);
 };
 
+const getAdminById = async (isAdmin) => {
+  const { rows } = await pool.query("SELECT * FROM users WHERE user_id = $1", [
+    isAdmin,
+  ]);
+  return rows[0];
+};
+
 module.exports = {
   getMessages,
   getMessageById,
@@ -63,4 +70,5 @@ module.exports = {
   addAdminById,
   newMessage,
   deleteMessageById,
+  getAdminById,
 };

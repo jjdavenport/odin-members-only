@@ -4,6 +4,7 @@ const {
   registerUser,
   deleteMessageById,
   newMessage,
+  getAdminById,
 } = require("../database/query");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -69,8 +70,8 @@ exports.status = async (req, res) => {
   if (req.isAuthenticated()) {
     res.status(200).json({
       loggedIn: true,
-      email: req.user,
-      admin: req.admin,
+      email: req.user.email,
+      admin: req.user.admin,
     });
   } else {
     res.status(200).json({ loggedIn: false });

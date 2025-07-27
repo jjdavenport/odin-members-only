@@ -6,6 +6,7 @@ type OutletType = {
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   admin: boolean;
+  authenticate: () => void;
 };
 
 export const Header = () => {
@@ -95,7 +96,7 @@ export const Login = () => {
     password: "",
   });
   const navigate = useNavigate();
-  const { setLoggedIn } = useOutletContext<OutletType>();
+  const { authenticate } = useOutletContext<OutletType>();
 
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -145,7 +146,8 @@ export const Login = () => {
           email: "",
           password: "",
         });
-        setLoggedIn(true); // update with /status/
+        authenticate();
+
         navigate("/");
       }
     } catch {
