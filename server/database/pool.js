@@ -13,4 +13,5 @@ module.exports = new Pool({
   port: PORT,
   database: DATABASE,
   host: HOSTNAME,
+  ssl: true,
 });
