@@ -59,6 +59,9 @@ ${messages
 
   const client = new Client({
     connectionString: `postgres://${USER}:${PASSWORD}@${HOSTNAME}:${PORT}/${DATABASE}`,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
   await client.connect();
