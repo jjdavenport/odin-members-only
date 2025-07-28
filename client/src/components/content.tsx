@@ -763,7 +763,7 @@ type MessageProps = {
   title: string;
   timestamp: string;
   message: string;
-  pageId?: string;
+  pageId: string;
   element: "link" | "div";
   author: string;
 };
@@ -839,8 +839,16 @@ export const Message = ({
   );
 };
 
+type MessageItem = {
+  id: string;
+  first_name: string;
+  title: string;
+  message: string;
+  created_at: string;
+};
+
 export const Messages = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<MessageItem[] | null>(null);
 
   const fetchData = async () => {
     try {

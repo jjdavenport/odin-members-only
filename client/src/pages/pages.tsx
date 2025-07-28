@@ -78,8 +78,16 @@ export const HomePage = () => {
   );
 };
 
+type MessageType = {
+  id: string;
+  first_name: string;
+  title: string;
+  message: string;
+  created_at: string;
+};
+
 export const MessagePage = () => {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState<MessageType | null>(null);
   const { id } = useParams();
 
   const fetchMessage = async () => {
@@ -104,7 +112,7 @@ export const MessagePage = () => {
       <Message
         author={message.first_name}
         element="div"
-        to={`/message/${message.id}`}
+        pageId={`/message/${message.id}`}
         title={message.title}
         message={message.message}
         timestamp={new Date(message.created_at).toLocaleString()}
