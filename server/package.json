@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm i",
-    "start": "node database/start-database.js && node app.js",
+    "build": "npm i && node database/start-database.js",
+    "start": "node app.js",
     "dev": "node --watch app.js",
     "db": "node database/start-database.js"
   },
